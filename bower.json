@@ -1,0 +1,21 @@
+{
+  "name": "pokeradar-map",
+  "homepage": "https://github.com/pokeradargo/map",
+  "authors": [
+    "dsola <d.sola.03@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "boostrap#^3.3.7",
+    "jquery": "^3.2.1"
+  }
+}
