@@ -1,0 +1,14 @@
+{
+    "pokemon-prediction": [
+        {
+            "id": 56,
+            "name": "Mankey",
+            "probability": 0.8656
+        },
+        {
+            "id": 84,
+            "name": "Doduo",
+            "probability": 0.75343
+        }
+    ]
+}
