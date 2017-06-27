@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+e_color blue "Stopping container adsmurai-logstash "
+docker container stop adsmurai-logstash &> ${DEBUG_OUTPUT_FILE} && e_success || e_error
+
+e_color blue "Stopping container adsmurai-kibana "
+docker container stop adsmurai-kibana &> ${DEBUG_OUTPUT_FILE} && e_success || e_error
+
+e_color blue "Stopping container adsmurai-elastic-search-node "
+docker container stop adsmurai-elastic-search-node &> ${DEBUG_OUTPUT_FILE} && e_success || e_error
+
+e_color blue "Stopping container adsmurai-elastic-search-master "
+docker container stop adsmurai-elastic-search-master &> ${DEBUG_OUTPUT_FILE} && e_success || e_error
+
+e_color blue "Removing container adsmurai-logstash "
+docker container rm adsmurai-logstash &> ${DEBUG_OUTPUT_FILE} && e_success || e_error
+
+e_color blue "Removing container adsmurai-kibana "
+docker container rm adsmurai-kibana &> ${DEBUG_OUTPUT_FILE} && e_success || e_error
+
+e_color blue "Removing container adsmurai-elastic-search-node "
+docker container rm adsmurai-elastic-search-node &> ${DEBUG_OUTPUT_FILE} && e_success || e_error
+
+e_color blue "Removing container adsmurai-elastic-search-master "
+docker container rm adsmurai-elastic-search-master &> ${DEBUG_OUTPUT_FILE} && e_success || e_error
+
+e_color blue "Removing network ELK-network-dev "
+docker network rm katana-ELK-network-dev &> ${DEBUG_OUTPUT_FILE} && e_success || e_error

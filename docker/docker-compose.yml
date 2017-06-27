@@ -1,0 +1,148 @@
+version: '3'
+
+volumes:
+  katana_mysql_var_lib:
+    external: true
+  katana_mongodb_data:
+    external: true
+
+networks:
+  adsmurai-network-dev:
+    external: true
+
+services:
+  katana-mysql-dev:
+    image: mysql:5.7
+    container_name: katana-mysql-dev
+    hostname: katana-mysql-dev
+    ports:
+      - "3307:3306"
+    volumes:
+      - katana_mysql_var_lib:/var/lib/mysql
+      - ./mysql/init_scripts:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=katana
+      - MYSQL_USER=katana
+      - MYSQL_PASSWORD=katana
+    networks:
+      adsmurai-network-dev:
+        ipv4_address: 172.18.2.5
+        aliases:
+          - katana-mysql-dev.sandbox
+
+  katana-mongodb-dev:
+    image: registry.adsmurai.com:17500/amp/dev/mongodb:latest
+    container_name: katana-mongodb-dev
+    hostname: katana-mongodb-dev
+    ports:
+      - "27018:27017"
+    volumes:
+      - katana_mongodb_data:/data/db
+      - ..:/mongo_extra_data
+    networks:
+      adsmurai-network-dev:
+        ipv4_address: 172.18.2.6
+        aliases:
+          - katana-mongodb-dev.sandbox
+    depends_on:
+      - katana-mysql-dev  # Hack, to ensure that MySQL is started on first place
+
+  katana-memcached-dev:
+    image: registry.adsmurai.com:17500/amp/dev/memcached:latest
+    container_name: katana-memcached-dev
+    hostname: katana-memcached-dev
+    user: memcache:memcache
+    networks:
+      adsmurai-network-dev:
+        ipv4_address: 172.18.2.7
+        aliases:
+          - katana-memcached-dev.sandbox
+    depends_on:
+      - katana-mongodb-dev  # Hack, to ensure that MySQL is started on first place
+
+  katana-beanstalkd-dev:
+    image: registry.adsmurai.com:17500/amp/dev/beanstalkd:latest
+    container_name: katana-beanstalk-dev
+    hostname: katana-beanstalk-dev
+    networks:
+      adsmurai-network-dev:
+        ipv4_address: 172.18.2.8
+        aliases:
+          - katana-beanstalkd-dev.sandbox
+
+  katana-beanstalk-console-dev:
+    image: registry.adsmurai.com:17500/amp/dev/beanstalk-console:latest
+    container_name: katana-beanstalk-console-dev
+    hostname: katana-beanstalk-console-dev
+    networks:
+      adsmurai-network-dev:
+        ipv4_address: 172.18.2.12
+        aliases:
+          - katana-beanstalk-console-dev.sandbox
+
+  katana-supervisord-dev:
+    image: registry.adsmurai.com:17500/amp/dev/supervisord:latest
+    container_name: katana-supervisord-dev
+    hostname: katana-supervisord-dev
+    volumes:
+      - ../..:/data
+      - ./supervisord/katana_worker.conf:/etc/supervisor/conf.d/katana_worker.conf
+      - ./supervisord/var-log:/var/log/supervisor
+      - ../.env.dev:/data/amp/.env
+    environment:
+      - HOST_USER_ID
+      - HOST_GROUP_ID
+      - APP_ENV
+    networks:
+      adsmurai-network-dev:
+        ipv4_address: 172.18.2.9
+        aliases:
+          - katana-supervisord-dev.sandbox
+    depends_on:
+      - katana-beanstalkd-dev
+
+  katana-php-fpm-dev:
+    container_name: katana-php-fpm-dev
+    image: registry.adsmurai.com:17500/amp/dev/php-fpm:latest
+    hostname: katana-php-fpm-dev
+    volumes:
+      - ../..:/data
+      - ../.env.dev:/data/amp/.env
+    environment:
+      - HOST_USER_ID
+      - HOST_GROUP_ID
+      - APP_ENV
+    networks:
+      adsmurai-network-dev:
+        ipv4_address: 172.18.2.10
+        aliases:
+          - katana-php-fpm-dev.sandbox
+    depends_on:
+      - katana-beanstalkd-dev
+      - katana-memcached-dev
+      - katana-mongodb-dev
+      - katana-mysql-dev
+
+  katana-nginx-dev:
+    container_name: katana-nginx-dev
+    image: registry.adsmurai.com:17500/amp/dev/nginx:latest
+    hostname: katana-nginx-dev
+    volumes:
+      - ../..:/data
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ./nginx/var-log:/var/log/nginx
+      - ../.env.dev:/data/amp/.env
+    environment:
+      - HOST_USER_ID
+      - HOST_GROUP_ID
+      - APP_ENV
+    networks:
+      adsmurai-network-dev:
+        ipv4_address: 172.18.2.11
+        aliases:
+          - katana-nginx-dev.sandbox
+          - katana.adsmurai.dev
+          - adsmurai.dev
+    depends_on:
+      - katana-php-fpm-dev

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-${PRJ_NAME}_dev}
+
+docker-compose -f $SCRIPT_DIR/docker-compose.yml start &> ${DEBUG_OUTPUT_FILE}                                      || \
+e_error "Please execute ./docker/upDevEnvironment before executing this action"                                        ;

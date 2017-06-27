@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+CHROME_IMAGE=selenium/node-chrome
+
+if [ ! -z "${DEBUG_ACTIVE}" ];
+then
+    CHROME_IMAGE=selenium/node-chrome-debug
+fi
+
+function finish {
+    docker container stop "${PRJ_NAME}_test_behat_${RANDOM_SUFFIX}"                           &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_nginx_${RANDOM_SUFFIX}"                           &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_fpm_${RANDOM_SUFFIX}"                             &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_beanstalkd_${RANDOM_SUFFIX}"                      &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_supervisord_${RANDOM_SUFFIX}"                     &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_memcached_${RANDOM_SUFFIX}"                       &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_chrome_${RANDOM_SUFFIX}"                          &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_selenium_${RANDOM_SUFFIX}"                        &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_mysql_${RANDOM_SUFFIX}"                           &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_mongo_${RANDOM_SUFFIX}"                           &> ${DEBUG_OUTPUT_FILE}  ;
+    docker network rm "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                     &> ${DEBUG_OUTPUT_FILE}  ;
+
+    exit ${BEHAT_STATUS:-1}
+}
+trap finish EXIT ;
+
+
+check_that_user_gitconfig_exists                                                                                    && \
+docker network create --driver bridge "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                     &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting MySQL
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_mysql_${RANDOM_SUFFIX}"                                                                   \
+    -e MYSQL_ROOT_PASSWORD=root                                                                                        \
+    -e MYSQL_DATABASE=${PRJ_NAME}                                                                                      \
+    -e MYSQL_USER=${PRJ_NAME}                                                                                          \
+    -e MYSQL_PASSWORD=${PRJ_NAME}                                                                                      \
+    -v "${SCRIPT_DIR}/mysql/init_scripts":/docker-entrypoint-initdb.d                                                  \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-mysql-dev                                                                                   \
+    --network-alias ${PRJ_NAME}-mysql-dev.sandbox                                                                      \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d mysql:5.7                                                                              &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting Mongo DB
+`exit $?`
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_mongo_${RANDOM_SUFFIX}"                                                                   \
+    -e DB_HOST_MONGO=${PRJ_NAME}-mongodb-dev.sandbox                                                                   \
+    -e DB_PORT_MONGO=27017                                                                                             \
+    -e DB_DATABASE_MONGO=adsmurai                                                                                      \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-mongodb-dev                                                                                 \
+    --network-alias ${PRJ_NAME}-mongodb-dev.sandbox                                                                    \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/mongodb:latest                                     &> ${DEBUG_OUTPUT_FILE}  ;
+
+is_os "Linux" && sleep 10 || sleep 15
+
+# Starting Selenium
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_selenium_${RANDOM_SUFFIX}"                                                                \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-selenium-test                                                                               \
+    --network-alias ${PRJ_NAME}-selenium-dev.sandbox                                                                   \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d selenium/hub                                                                           &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting Chrome
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_chrome_${RANDOM_SUFFIX}"                                                                  \
+    -e HUB_PORT_4444_TCP_ADDR="${PRJ_NAME}-selenium-dev.sandbox"                                                       \
+    -e HUB_PORT_4444_TCP_PORT=4444                                                                                     \
+    -P                                                                                                                 \
+    -p 5900:5900                                                                                                       \
+    --hostname ${PRJ_NAME}-chrome-test                                                                                 \
+    --network-alias ${PRJ_NAME}-chrome-dev.sandbox                                                                     \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d ${CHROME_IMAGE}                                                                   &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting Memcached
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name  "${PRJ_NAME}_test_memcached_${RANDOM_SUFFIX}"                                                              \
+    -u memcache:memcache                                                                                               \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-memcached-test                                                                              \
+    --network-alias ${PRJ_NAME}-memcached-dev.sandbox                                                                  \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/memcached:latest                                   &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting beanstalkd
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_beanstalkd_${RANDOM_SUFFIX}"                                                              \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-beanstalkd-test                                                                             \
+    --network-alias ${PRJ_NAME}-beanstalkd-dev.sandbox                                                                 \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/beanstalkd:latest                                  &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting SUPERVISORD
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_supervisord_${RANDOM_SUFFIX}"                                                             \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="functional_testing"                                                                                    \
+    -v "${SCRIPT_DIR}/../..":/data                                                                                     \
+    -v "${SCRIPT_DIR}/../.env.functional_testing":/data/${PRJ_NAME}/.env                                               \
+    -v "${SCRIPT_DIR}/supervisord/katana_worker.conf":/etc/supervisor/conf.d/katana_worker.conf                        \
+    -w /data/${PRJ_NAME}                                                                                               \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-supervisord-test                                                                            \
+    --network-alias ${PRJ_NAME}-supervisord-dev.sandbox                                                                \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/supervisord:latest                                 &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting PHP-FPM
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_fpm_${RANDOM_SUFFIX}"                                                                     \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="functional_testing"                                                                                    \
+    -v "${SCRIPT_DIR}/../..":/data                                                                                     \
+    -v "${SCRIPT_DIR}/../.env.functional_testing":/data/${PRJ_NAME}/.env                                               \
+    -w /data/${PRJ_NAME}                                                                                               \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-fpm-test                                                                                    \
+    --network-alias ${PRJ_NAME}-php-fpm-dev.sandbox                                                                    \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/php-fpm:latest                                     &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting Nginx
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_nginx_${RANDOM_SUFFIX}"                                                                   \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="functional_testing"                                                                                    \
+    -v "${SCRIPT_DIR}/../..":/data                                                                                     \
+    -v "${SCRIPT_DIR}/nginx/sites-enabled":/etc/nginx/sites-enabled                                                    \
+    -v "${SCRIPT_DIR}/../.env.functional_testing":/data/${PRJ_NAME}/.env                                               \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-nginx-test                                                                                  \
+    --network-alias ${PRJ_NAME}.adsmurai.dev                                                                           \
+    --network-alias ${PRJ_NAME}-nginx-dev.sandbox                                                                      \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/nginx:latest                                       &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Running Behat
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name  "${PRJ_NAME}_test_behat_${RANDOM_SUFFIX}"                                                                  \
+    -${TERMINAL_MODE}                                                                                                  \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="functional_testing"                                                                                    \
+    -v "${SCRIPT_DIR}/../..":/data                                                                                     \
+    -v "${SCRIPT_DIR}/../.env.functional_testing":/data/${PRJ_NAME}/.env                                               \
+    -w "/data/${PRJ_NAME}"                                                                                             \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    registry.adsmurai.com:17500/amp/dev/php-cli:latest php ./vendor/bin/behat "$@"                                     ;
+
+BEHAT_STATUS=$?

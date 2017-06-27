@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+if [ -z "${CUSTOM_NETWORK}" ]; then
+    CUSTOM_NETWORK_PARAM="";
+else
+    CUSTOM_NETWORK_PARAM=" --network ${CUSTOM_NETWORK} ";
+fi
+
+docker run                                                                                                             \
+    --rm                                                                                                               \
+    --name php_${RANDOM_SUFFIX}                                                                                        \
+    -${TERMINAL_MODE}                                                                                                  \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="dev"                                                                                                   \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../..":/data                                                                      \
+    -v "${HACKY_PREFIX}${HOME}/.ssh":/home/developer/.ssh                                                              \
+    -v "${HACKY_PREFIX}${HOME}/.gitconfig":/home/developer/.gitconfig                                                  \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../.env.dev":/data/amp/.env                                                       \
+    -w "/data/${PRJ_NAME}${REL_DIR}"                                                                                   \
+    ${CUSTOM_NETWORK_PARAM}                                                                                            \
+    registry.adsmurai.com:17500/amp/dev/php-cli:latest php "$@"                                                        ;

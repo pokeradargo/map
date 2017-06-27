@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+# Creating test network
+docker network create --driver bridge "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                     &> ${DEBUG_OUTPUT_FILE}  ;
+
+function finish {
+    docker container stop "${PRJ_NAME}_test_nginx_${RANDOM_SUFFIX}"                           &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_fpm_${RANDOM_SUFFIX}"                             &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_mongodb_${RANDOM_SUFFIX}"                         &> ${DEBUG_OUTPUT_FILE}  ;
+    docker container stop "${PRJ_NAME}_test_mysql_${RANDOM_SUFFIX}"                           &> ${DEBUG_OUTPUT_FILE}  ;
+    docker network rm "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                     &> ${DEBUG_OUTPUT_FILE}  ;
+
+    exit ${PHPUNIT_STATUS:-1}
+}
+trap finish EXIT ;
+
+# Starting MySQL
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_mysql_${RANDOM_SUFFIX}"                                                                   \
+    -e MYSQL_ROOT_PASSWORD=root                                                                                        \
+    -e MYSQL_DATABASE=${PRJ_NAME}                                                                                      \
+    -e MYSQL_USER=${PRJ_NAME}                                                                                          \
+    -e MYSQL_PASSWORD=${PRJ_NAME}                                                                                      \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/mysql/init_scripts":/docker-entrypoint-initdb.d                                   \
+    --tmpfs /var/lib/mysql:rw                                                                                          \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-mysql-dev                                                                                   \
+    --network-alias ${PRJ_NAME}-mysql-dev.sandbox                                                                      \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d mysql:5.7                                                                              &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting MongoDB
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_mongodb_${RANDOM_SUFFIX}"                                                                 \
+    --tmpfs /data/db:rw                                                                                                \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-mongodb-dev                                                                                 \
+    --network-alias ${PRJ_NAME}-mongodb-dev.sandbox                                                                    \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/mongodb:latest                                     &> ${DEBUG_OUTPUT_FILE}  ;
+
+sleep 10;
+
+# Starting PHP-FPM
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_fpm_${RANDOM_SUFFIX}"                                                                     \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="testing"                                                                                               \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../..":/data                                                                      \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../.env.testing":/data/amp/.env                                                   \
+    -w "/data/${PRJ_NAME}"                                                                                             \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-fpm-test                                                                                    \
+    --network-alias ${PRJ_NAME}-php-fpm-dev.sandbox                                                                    \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/php-fpm:latest                                     &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Starting Nginx
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_nginx_${RANDOM_SUFFIX}"                                                                   \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="testing"                                                                                               \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../..":/data                                                                      \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/nginx/sites-enabled":/etc/nginx/sites-enabled                                     \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../.env.testing":/data/amp/.env                                                   \
+    -P                                                                                                                 \
+    --hostname ${PRJ_NAME}-nginx-test                                                                                  \
+    --network-alias adsmurai.dev                                                                                       \
+    --network-alias ${PRJ_NAME}.adsmurai.dev                                                                           \
+    --network-alias ${PRJ_NAME}-nginx-test.sandbox                                                                     \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    -d registry.adsmurai.com:17500/amp/dev/nginx:latest                                       &> ${DEBUG_OUTPUT_FILE}  ;
+
+# Running migrations
+`exit $?`                                                                                                           && \
+docker exec                                                                                                            \
+    -${TERMINAL_MODE}                                                                                                  \
+    -u developer                                                                                                       \
+    -e APP_ENV="testing"                                                                                               \
+    "${PRJ_NAME}_test_fpm_${RANDOM_SUFFIX}"                                                                            \
+    bash -c '( cd /data/'${PRJ_NAME}'; php /data/'${PRJ_NAME}'/artisan migrate &> '${DEBUG_OUTPUT_FILE}' )'            ;
+
+# Running seeders
+`exit $?`                                                                                                           && \
+docker exec                                                                                                            \
+    -${TERMINAL_MODE}                                                                                                  \
+    -u developer                                                                                                       \
+    -e APP_ENV="testing"                                                                                               \
+    "${PRJ_NAME}_test_fpm_${RANDOM_SUFFIX}"                                                                            \
+    bash -c '( cd /data/'${PRJ_NAME}'; php /data/'${PRJ_NAME}'/artisan db:seed --class=TestingSeeder &> '${DEBUG_OUTPUT_FILE}' )'   ;
+
+# Running PHPUnit
+`exit $?`                                                                                                           && \
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name  "${PRJ_NAME}_test_phpunit_${RANDOM_SUFFIX}"                                                                \
+    -${TERMINAL_MODE}                                                                                                  \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="testing"                                                                                               \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../..":/data                                                                      \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../.env.testing":/data/amp/.env                                                   \
+    -w "/data/${PRJ_NAME}"                                                                                             \
+    --network "${PRJ_NAME}_test_${RANDOM_SUFFIX}"                                                                      \
+    registry.adsmurai.com:17500/amp/dev/php-cli:latest php ./vendor/bin/phpunit "$@"                                   ;
+
+PHPUNIT_STATUS=$?                                                                                                      ;

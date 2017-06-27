@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+APP_ENV=dev
+FPM_CONTAINER=`docker ps | grep "${PRJ_NAME}-php-fpm-dev"`
+
+if [[ -z "${FPM_CONTAINER}" ]];
+then
+    e_error "Please execute ./docker/startDevEnvironment before executing this action";
+    exit 1;
+fi
+
+docker exec                                                                                                            \
+    -${TERMINAL_MODE}                                                                                                  \
+    -u developer                                                                                                       \
+    -e APP_ENV="${APP_ENV}"                                                                                            \
+    ${PRJ_NAME}-php-fpm-dev                                                                                            \
+    bash -c '( cd /data/'${PRJ_NAME}'; php /data/'${PRJ_NAME}'/artisan "$@" )' -- "$@"                                 ;

@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+# Run PHP Fixer
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_csfixer_${RANDOM_SUFFIX}"                                                                 \
+    -t                                                                                                                 \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../..":/data                                                                      \
+    -w "/data/${PRJ_NAME}"                                                                                             \
+    registry.adsmurai.com:17500/amp/dev/php-cli:latest                                                                 \
+    php ./vendor/adsmurai/pre-commit-hooks/src/CodeQualityTool.php --execute-tests=false                               ;
+
+CS_FIXER_STATUS=$?
+if [ ${CS_FIXER_STATUS} -ne 0 ]
+then
+    e_error "Error while executing PHP CS Fixer."                                                                      ;
+    exit ${CS_FIXER_STATUS}                                                                                            ;
+else
+    e_success "CS Fixer executed successfully."                                                                        ;
+fi
+
+# Run PHPUnit
+docker container run                                                                                                   \
+    --rm                                                                                                               \
+    --name "${PRJ_NAME}_test_phpunit_${RANDOM_SUFFIX}"                                                                 \
+    -t                                                                                                                 \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV="testing"                                                                                               \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../..":/data                                                                      \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../.env.testing":/data/${PRJ_NAME}/.env                                           \
+    -w "/data/${PRJ_NAME}"                                                                                             \
+    registry.adsmurai.com:17500/amp/dev/php-cli:latest php ./vendor/bin/phpunit --testsuite=devel                      ;
+
+PHPUNIT_STATUS=$?
+if [ ${PHPUNIT_STATUS} -ne 0 ]
+then
+    e_error "Please review the Unit tests."                                                                            ;
+    exit ${PHPUNIT_STATUS}                                                                                             ;
+else
+    e_success "Unit tests executed successfully"                                                                       ;
+fi
+
+exit 0

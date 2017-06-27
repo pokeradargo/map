@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+source "${SCRIPT_DIR}/composer" install                                                                             && \
+source "${SCRIPT_DIR}/npm" install                                                                                  && \
+source "${SCRIPT_DIR}/bower" install                                                                                && \
+cd "${SCRIPT_DIR}/../planner"                                                                                       && \
+rm -rf bower_components                                                                                             && \
+source "${SCRIPT_DIR}/bower" install                                                                                && \
+source "${SCRIPT_DIR}/gulp"                                                                                            ;

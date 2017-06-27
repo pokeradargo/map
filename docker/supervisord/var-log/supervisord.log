@@ -1,0 +1,163 @@
+2017-06-19 14:42:21,499 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-19 14:42:21,505 INFO RPC interface 'supervisor' initialized
+2017-06-19 14:42:21,505 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-19 14:42:21,505 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-19 14:42:22,508 INFO spawned: 'queues_00' with pid 34
+2017-06-19 14:42:22,510 INFO spawned: 'queues_01' with pid 35
+2017-06-19 14:42:22,548 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 14:42:23,550 INFO spawned: 'queues_00' with pid 36
+2017-06-19 14:42:23,551 INFO success: queues_01 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-19 14:42:23,551 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:42:23,569 INFO spawned: 'queues_01' with pid 37
+2017-06-19 14:42:23,571 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 14:42:23,591 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:42:24,594 INFO spawned: 'queues_01' with pid 38
+2017-06-19 14:42:24,646 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:42:25,649 INFO spawned: 'queues_00' with pid 39
+2017-06-19 14:42:25,702 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 14:42:26,705 INFO spawned: 'queues_01' with pid 40
+2017-06-19 14:42:26,756 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:42:28,758 INFO spawned: 'queues_00' with pid 41
+2017-06-19 14:42:28,784 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 14:42:29,785 INFO gave up: queues_00 entered FATAL state, too many start retries too quickly
+2017-06-19 14:42:29,787 INFO spawned: 'queues_01' with pid 42
+2017-06-19 14:42:29,842 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:42:30,843 INFO gave up: queues_01 entered FATAL state, too many start retries too quickly
+2017-06-19 14:46:12,836 WARN received SIGTERM indicating exit request
+2017-06-19 14:46:14,097 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-19 14:46:14,102 INFO RPC interface 'supervisor' initialized
+2017-06-19 14:46:14,102 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-19 14:46:14,102 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-19 14:46:15,106 INFO spawned: 'queues_00' with pid 34
+2017-06-19 14:46:15,108 INFO spawned: 'queues_01' with pid 35
+2017-06-19 14:46:15,136 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 14:46:15,136 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:46:16,140 INFO spawned: 'queues_00' with pid 36
+2017-06-19 14:46:16,144 INFO spawned: 'queues_01' with pid 37
+2017-06-19 14:46:16,189 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 14:46:16,191 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:46:18,196 INFO spawned: 'queues_00' with pid 38
+2017-06-19 14:46:18,200 INFO spawned: 'queues_01' with pid 39
+2017-06-19 14:46:18,252 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:46:18,252 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 14:46:21,258 INFO spawned: 'queues_00' with pid 40
+2017-06-19 14:46:21,261 INFO spawned: 'queues_01' with pid 41
+2017-06-19 14:46:21,285 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 14:46:21,285 INFO gave up: queues_00 entered FATAL state, too many start retries too quickly
+2017-06-19 14:46:21,285 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 14:46:22,286 INFO gave up: queues_01 entered FATAL state, too many start retries too quickly
+2017-06-19 15:04:45,078 WARN received SIGTERM indicating exit request
+2017-06-19 15:05:13,812 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-19 15:05:13,819 INFO RPC interface 'supervisor' initialized
+2017-06-19 15:05:13,819 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-19 15:05:13,819 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-19 15:05:14,822 INFO spawned: 'queues_00' with pid 33
+2017-06-19 15:05:14,824 INFO spawned: 'queues_01' with pid 34
+2017-06-19 15:05:14,851 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 15:05:14,852 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 15:05:15,855 INFO spawned: 'queues_00' with pid 35
+2017-06-19 15:05:15,859 INFO spawned: 'queues_01' with pid 36
+2017-06-19 15:05:15,887 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 15:05:15,888 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 15:05:17,893 INFO spawned: 'queues_00' with pid 37
+2017-06-19 15:05:17,895 INFO spawned: 'queues_01' with pid 38
+2017-06-19 15:05:17,921 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 15:05:17,922 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 15:05:20,928 INFO spawned: 'queues_00' with pid 39
+2017-06-19 15:05:20,931 INFO spawned: 'queues_01' with pid 40
+2017-06-19 15:05:20,955 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 15:05:20,955 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 15:05:21,957 INFO gave up: queues_00 entered FATAL state, too many start retries too quickly
+2017-06-19 15:05:21,957 INFO gave up: queues_01 entered FATAL state, too many start retries too quickly
+2017-06-19 15:16:29,717 WARN received SIGTERM indicating exit request
+2017-06-19 15:28:13,968 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-19 15:28:13,974 INFO RPC interface 'supervisor' initialized
+2017-06-19 15:28:13,974 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-19 15:28:13,974 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-19 15:28:14,977 INFO spawned: 'queues_00' with pid 34
+2017-06-19 15:28:14,979 INFO spawned: 'queues_01' with pid 35
+2017-06-19 15:28:15,009 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 15:28:15,009 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 15:28:16,012 INFO spawned: 'queues_00' with pid 36
+2017-06-19 15:28:16,014 INFO spawned: 'queues_01' with pid 37
+2017-06-19 15:28:16,039 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 15:28:16,039 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 15:28:18,044 INFO spawned: 'queues_00' with pid 38
+2017-06-19 15:28:18,047 INFO spawned: 'queues_01' with pid 39
+2017-06-19 15:28:18,074 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 15:28:18,074 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 15:28:21,080 INFO spawned: 'queues_00' with pid 40
+2017-06-19 15:28:21,083 INFO spawned: 'queues_01' with pid 41
+2017-06-19 15:28:21,106 INFO exited: queues_00 (exit status 255; not expected)
+2017-06-19 15:28:21,106 INFO exited: queues_01 (exit status 255; not expected)
+2017-06-19 15:28:22,108 INFO gave up: queues_00 entered FATAL state, too many start retries too quickly
+2017-06-19 15:28:22,108 INFO gave up: queues_01 entered FATAL state, too many start retries too quickly
+2017-06-19 15:56:34,675 WARN received SIGTERM indicating exit request
+2017-06-19 16:27:37,889 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-19 16:27:37,895 INFO RPC interface 'supervisor' initialized
+2017-06-19 16:27:37,895 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-19 16:27:37,895 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-19 16:27:38,899 INFO spawned: 'queues_00' with pid 23
+2017-06-19 16:27:38,903 INFO spawned: 'queues_01' with pid 24
+2017-06-19 16:27:39,905 INFO success: queues_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-19 16:27:39,905 INFO success: queues_01 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-19 16:47:16,222 WARN received SIGTERM indicating exit request
+2017-06-19 16:47:16,224 INFO waiting for queues_00, queues_01 to die
+2017-06-19 16:47:16,245 INFO stopped: queues_00 (terminated by SIGTERM)
+2017-06-19 16:47:16,245 INFO stopped: queues_01 (terminated by SIGTERM)
+2017-06-20 09:07:41,411 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-20 09:07:41,421 INFO RPC interface 'supervisor' initialized
+2017-06-20 09:07:41,421 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-20 09:07:41,421 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-20 09:07:42,425 INFO spawned: 'queues_00' with pid 22
+2017-06-20 09:07:42,429 INFO spawned: 'queues_01' with pid 23
+2017-06-20 09:07:43,431 INFO success: queues_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-20 09:07:43,431 INFO success: queues_01 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-20 17:24:27,904 WARN received SIGTERM indicating exit request
+2017-06-20 17:24:27,904 INFO waiting for queues_00, queues_01 to die
+2017-06-20 17:24:27,906 INFO stopped: queues_00 (terminated by SIGTERM)
+2017-06-20 17:24:27,906 INFO stopped: queues_01 (terminated by SIGTERM)
+2017-06-21 09:30:19,259 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-21 09:30:19,274 INFO RPC interface 'supervisor' initialized
+2017-06-21 09:30:19,274 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-21 09:30:19,274 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-21 09:30:20,277 INFO spawned: 'queues_00' with pid 21
+2017-06-21 09:30:20,279 INFO spawned: 'queues_01' with pid 22
+2017-06-21 09:30:21,281 INFO success: queues_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-21 09:30:21,281 INFO success: queues_01 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-21 09:30:59,791 WARN received SIGTERM indicating exit request
+2017-06-21 09:30:59,792 INFO waiting for queues_00, queues_01 to die
+2017-06-21 09:30:59,796 INFO stopped: queues_00 (terminated by SIGTERM)
+2017-06-21 09:30:59,796 INFO stopped: queues_01 (terminated by SIGTERM)
+2017-06-21 09:31:01,004 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-21 09:31:01,010 INFO RPC interface 'supervisor' initialized
+2017-06-21 09:31:01,010 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-21 09:31:01,010 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-21 09:31:02,013 INFO spawned: 'queues_00' with pid 33
+2017-06-21 09:31:02,016 INFO spawned: 'queues_01' with pid 34
+2017-06-21 09:31:03,017 INFO success: queues_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-21 09:31:03,017 INFO success: queues_01 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-21 18:31:10,790 WARN received SIGTERM indicating exit request
+2017-06-21 18:31:10,808 INFO waiting for queues_00, queues_01 to die
+2017-06-21 18:31:10,812 INFO stopped: queues_00 (terminated by SIGTERM)
+2017-06-21 18:31:10,812 INFO stopped: queues_01 (terminated by SIGTERM)
+2017-06-26 09:09:21,366 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-26 09:09:21,375 INFO RPC interface 'supervisor' initialized
+2017-06-26 09:09:21,375 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-26 09:09:21,375 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-26 09:09:22,378 INFO spawned: 'queues_00' with pid 23
+2017-06-26 09:09:22,382 INFO spawned: 'queues_01' with pid 24
+2017-06-26 09:09:23,383 INFO success: queues_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-26 09:09:23,383 INFO success: queues_01 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-26 17:59:36,768 WARN received SIGTERM indicating exit request
+2017-06-26 17:59:36,769 INFO waiting for queues_00, queues_01 to die
+2017-06-26 17:59:36,775 INFO stopped: queues_01 (terminated by SIGTERM)
+2017-06-26 17:59:36,787 INFO stopped: queues_00 (terminated by SIGTERM)
+2017-06-27 16:24:32,689 WARN Included extra file "/etc/supervisor/conf.d/katana_worker.conf" during parsing
+2017-06-27 16:24:32,698 INFO RPC interface 'supervisor' initialized
+2017-06-27 16:24:32,698 CRIT Server 'unix_http_server' running without any HTTP authentication checking
+2017-06-27 16:24:32,698 CRIT could not write pidfile /var/run/supervisord.pid
+2017-06-27 16:24:33,701 INFO spawned: 'queues_00' with pid 22
+2017-06-27 16:24:33,704 INFO spawned: 'queues_01' with pid 23
+2017-06-27 16:24:34,706 INFO success: queues_00 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2017-06-27 16:24:34,707 INFO success: queues_01 entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)

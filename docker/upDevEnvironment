@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-${PRJ_NAME}_dev}
+export APP_ENV=dev
+
+check_that_user_gitconfig_exists                                                                                    && \
+ensure_docker_network_existence "adsmurai-network-dev" "172.18.0.0/16"                                              && \
+ensure_docker_volume_existence "${PRJ_NAME}_mysql_var_lib"                                                          && \
+ensure_docker_volume_existence "${PRJ_NAME}_mongodb_data"                                                           && \
+mkdir -p "${SCRIPT_DIR}/nginx/var-log"                                                                              && \
+mkdir -p "${SCRIPT_DIR}/supervisord/var-log"                                                                        && \
+docker-compose -f "${SCRIPT_DIR}/docker-compose.yml" up --no-build --force-recreate -d                                 ;
+
+`exit $?`                                                                                                           && \
+if [ -d "${SCRIPT_DIR}/../vendor" ];
+then
+    is_os "Linux" && sleep 15 || sleep 25                                                                              ;
+else
+    source "${SCRIPT_DIR}/initProject"                                                                                 ;
+fi
+
+`exit $?`                                                                                                           && \
+source "${SCRIPT_DIR}/artisan" migrate                                                                              && \
+source "${SCRIPT_DIR}/artisan" db:seed --class=SeleniumUserSeeder                                                      ;

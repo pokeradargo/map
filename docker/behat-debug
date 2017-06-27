@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+#REMEMBER, the pw to vnc is "secret"
+#More info in https://github.com/SeleniumHQ/docker-selenium
+
+DEBUG_ACTIVE=true
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+
+source "${SCRIPT_DIR}/behat" "$@"

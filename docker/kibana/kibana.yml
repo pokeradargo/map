@@ -1,0 +1,2 @@
+server.host: "0.0.0.0"
+elasticsearch.url: "http://elastic-search-master-dev.sandbox:9200"

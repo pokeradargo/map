@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+export COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-katana_dev}
+
+docker-compose -f "$SCRIPT_DIR/docker-compose.yml" down --volumes

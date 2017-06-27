@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P )"
+source "${SCRIPT_DIR}/bashLib/commonLib.sh"
+
+docker run                                                                                                             \
+    --rm                                                                                                               \
+    --name composer_${RANDOM_SUFFIX}                                                                                   \
+    -${TERMINAL_MODE}                                                                                                  \
+    -e HOST_USER_ID=${HOST_USER_ID}                                                                                    \
+    -e HOST_GROUP_ID=${HOST_GROUP_ID}                                                                                  \
+    -e APP_ENV=dev                                                                                                     \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../..":/data                                                                      \
+    -v "${HACKY_PREFIX}${HOME}/.ssh":/home/developer/.ssh                                                              \
+    -v "${HACKY_PREFIX}${HOME}/.gitconfig":/home/developer/.gitconfig                                                  \
+    -v composer_cache:/home/developer/.composer/cache                                                                  \
+    -v "${HACKY_PREFIX}${SCRIPT_DIR}/../.env.dev":"/data/${PRJ_NAME}/.env"                                             \
+    -w "/data/${PRJ_NAME}${REL_DIR}"                                                                                   \
+    registry.adsmurai.com:17500/amp/dev/php-cli:latest composer "$@"                                                   ;
