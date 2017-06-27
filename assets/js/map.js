@@ -65,7 +65,7 @@ var MapComponent = {
                content += '</ul>';
 
 
-               infowindow.setContent(title + '<div class="modal-dialog">' + content + '</div>');
+               infowindow.setContent(title + '<div>' + content + '</div>');
            //});
        }).bind(this));
   }

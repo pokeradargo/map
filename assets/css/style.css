@@ -17,3 +17,9 @@ header {
 footer {
     height:20px;
 }
+
+.over_map_container {
+    position: absolute;
+    top: 10px; left: 10px;
+    z-index: 99;
+}
