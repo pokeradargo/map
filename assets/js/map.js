@@ -39,34 +39,33 @@ var MapComponent = {
        }).bind(this));
 
        marker.addListener('dragend', (function() {
-           //$.getJSON( "assets/js/response_mock.json", function( data ) {
-               var data = {
-                   "pokemon_prediction": [
-                       {
-                           "id": 56,
-                           "name": "Mankey",
-                           "probability": 0.8656
-                       },
-                       {
-                           "id": 84,
-                           "name": "Doduo",
-                           "probability": 0.75343
-                       }
-                   ]
-               };
 
-               var totalPokemons = data['pokemon_prediction'].length;
-               var title = '<h3>' + totalPokemons + ' Pokémons Found </h3>';
+          var latitude = marker.getPosition().lat();
+          var longitude = marker.getPosition().lng();
+           $.getJSON( "http://ci.adsmurai.net:5300/?lat=" + latitude + "&lng=" + longitude, function( data ) {
 
-               var content = '<ul>';
-               data['pokemon_prediction'].forEach(function(pokemon) {
-                   content += '<li>#' + pokemon.id + ' ' + pokemon.name + ' with a probability of ' + pokemon.probability + '</li>';
-               });
-               content += '</ul>';
+               var output = data.output;
 
+               if (Object.keys(output).length > 0) {
+                 var predictions = Object.values(output);
+                 var names = Object.keys(output);
+                 var totalPokemons = predictions.length;
+                 var content = '<ul>';
+                 predictions.forEach(function(prediction, index) {
+                     content += '<li>'+ names[index] + '</li>';
+                 });
+                 content += '</ul>';
+                 content += '<p>With a probability of <b>' + predictions[0] + '</b>.</p>';
+               } else {
+                  var totalPokemons = 0;
+                  content = 'Any information could be found';
+               }
 
+               
+
+              var title = '<h3>' + totalPokemons + ' Pokémons Found </h3>';
                infowindow.setContent(title + '<div>' + content + '</div>');
-           //});
+           });
        }).bind(this));
   }
 }
